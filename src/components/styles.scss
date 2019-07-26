@@ -1,0 +1,30 @@
+.bookItemsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-gap: 2em;
+  justify-items: center;
+}
+
+.paginationContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 1em;
+  padding: 0.5em;
+}
+
+.BookListItems {
+  list-style: none;
+  padding: 0.15em;
+  margin-top: 0.8em;
+  li {
+    text-align: left;
+    margin-bottom: 0.4em;
+    font-size: 0.88rem;
+    span {
+      color: #070731;
+      padding-left: 0.4em;
+    }
+  }
+}
