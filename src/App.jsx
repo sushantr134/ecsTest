@@ -1,48 +1,56 @@
-import React, { useState } from "react";
+import React from "react";
+import { Layout, Spin, Input } from "antd";
+
+import FetchBooks from "./components/fetchBooks";
+import Cart from "./components/cart";
+
 import styles from "./app.global.scss";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { fetchBooks, AddItemsToCart } from "./redux/actions";
 
-import { ApolloProvider, Query } from "react-apollo";
-import ApolloClient, { gql } from "apollo-boost";
+const { Header, Content } = Layout;
 
-const client = new ApolloClient({ uri: process.env.GraphQL_SERVER_ENDPOINT });
+class App extends React.PureComponent {
+  constructor(props) {
+    super(props);
+  }
 
-const App = () => {
-  const [countState, setCount] = useState({ count: 0 });
+  componentDidMount() {
+    this.props.fetchBooks();
+  }
 
-  const handleCount = () => {
-    setCount({ count: countState.count + 1 });
-  };
-  const query = gql`
-    query {
-      me {
-        name
-        email
-      }
-    }
-  `;
-  return (
-    <ApolloProvider client={client}>
-      <Query query={query}>
-        {({ loading, err, data }) => {
-          if (loading) {
-            return <h3>Loading... </h3>;
-          }
-          if (err) {
-            return err;
-          }
-          return (
-            <h2>
-              Data from Graphql:- {data.me[0].name} {data.me[0].email}
-            </h2>
-          );
-        }}
-      </Query>
-      <button className={styles.buttonDefault} onClick={handleCount}>
-        Click Me
-      </button>
-      <h1>count: {countState.count}</h1>
-    </ApolloProvider>
-  );
-};
+  render() {
+    return (
+      <Layout>
+        <Header>
+          <h1 style={{ color: "white" }}>Books Store</h1>
+        </Header>
+        <Content className={styles.Container}>
+          {this.props.bookStoreData.booksData.length > 0 ? (
+            <FetchBooks addItemsToCartHandler={this.props.AddItemsToCart} booksData={this.props.bookStoreData.booksData} />
+          ) : (
+            <Spin tip='Loading Books...' />
+          )}
+        </Content>
+      </Layout>
+    );
+  }
+}
 
-export default App;
+export default connect(
+  state => {
+    return {
+      bookStoreData: state.booksStore
+    };
+  },
+  dispatch => {
+    return bindActionCreators(
+      {
+        fetchBooks,
+        AddItemsToCart
+      },
+      dispatch
+    );
+  }
+)(App);
