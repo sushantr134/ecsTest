@@ -1,5 +1,5 @@
 import React from "react";
-import { Spin, Card, Button, Icon, Rate } from "antd";
+import { Spin, Card, Button, Icon, Rate, message } from "antd";
 import styles from "./styles.scss";
 import ButtonGroup from "antd/lib/button/button-group";
 import Meta from "antd/lib/card/Meta";
@@ -47,8 +47,6 @@ export default class FetchBooks extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      booksData: [],
-      isLoading: true,
       startIndex: 0,
       endIndex: 10,
       itemsAddedToCart: 0,
@@ -57,13 +55,6 @@ export default class FetchBooks extends React.PureComponent {
     this.limit = 10;
     this.handleBackBooksLimit = this.handleBackBooksLimit.bind(this);
     this.handleNextBooksLimit = this.handleNextBooksLimit.bind(this);
-  }
-
-  componentDidMount() {
-    this.setState({
-      booksData: this.props.booksData,
-      isLoading: false
-    });
   }
 
   AddItemToCart = itemObj => {
@@ -96,6 +87,8 @@ export default class FetchBooks extends React.PureComponent {
 
   checkEndLimit = dataArr => {
     if (this.state.endIndex === dataArr.length) {
+      message.warning("Search Results reached end of limit.");
+      this.setState({ startIndex: 0, endIndex: 10 });
       return true;
     } else {
       return false;
@@ -103,7 +96,7 @@ export default class FetchBooks extends React.PureComponent {
   };
 
   handleNextBooksLimit = () => {
-    this.checkEndLimit(this.state.booksData) != true &&
+    this.checkEndLimit(this.props.booksData) != true &&
       this.setState(prev => {
         return {
           startIndex: prev.startIndex + this.limit,
@@ -124,34 +117,30 @@ export default class FetchBooks extends React.PureComponent {
   render() {
     return (
       <>
-        {this.state.isLoading === false ? (
-          <>
-            {/* <Button type='primary' style={{ width: "98px" }}>
+        {/* <Button type='primary' style={{ width: "98px" }}>
               Go To Cart
             </Button> */}
-            <div className={styles.bookItemsContainer}>
-              {this.state.booksData.slice(this.state.startIndex, this.state.endIndex).map(data => {
-                return <BookItem key={data.bookID} data={data} addItemToCart={this.AddItemToCart} />;
-              })}
-            </div>
 
-            <div className={styles.paginationContainer}>
-              <ButtonGroup>
-                {this.state.endIndex > 10 && this.state.startIndex > 0 && (
-                  <Button type='primary' onClick={this.handleBackBooksLimit}>
-                    <Icon type='backward' />
-                    Back
-                  </Button>
-                )}
-                <Button type='primary' onClick={this.handleNextBooksLimit}>
-                  Next <Icon type='forward' />
-                </Button>
-              </ButtonGroup>
-            </div>
-          </>
-        ) : (
-          <Spin tip='Loading Books...' />
-        )}
+        {this.props.booksData.length === 0 && message.error("No Such Results found")}
+        <div className={styles.bookItemsContainer}>
+          {this.props.booksData.slice(this.state.startIndex, this.state.endIndex).map(data => {
+            return <BookItem key={data.bookID} data={data} addItemToCart={this.AddItemToCart} />;
+          })}
+        </div>
+
+        <div className={styles.paginationContainer}>
+          <ButtonGroup>
+            {this.state.endIndex > 10 && this.state.startIndex > 0 && (
+              <Button type='primary' onClick={this.handleBackBooksLimit}>
+                <Icon type='backward' />
+                Back
+              </Button>
+            )}
+            <Button type='primary' onClick={this.handleNextBooksLimit}>
+              Next <Icon type='forward' />
+            </Button>
+          </ButtonGroup>
+        </div>
       </>
     );
   }
