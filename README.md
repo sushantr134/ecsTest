@@ -12,3 +12,4 @@ This App using React.js, Sass Modules, Parcel-bundler, Antd UI, Redux and Redux-
 Each Time it will render 10 Books at a time, if user clicks on next button at the bottom it will load next 10 books item.
 To Check Cart Functionality, Check the Redux Logs to see the items are added to the `CartItemsStore` or not.
   
+<a href="https://unruffled-colden-9a1ed4.netlify.com/">Link to see deployed App</a>
